@@ -209,7 +209,7 @@ frappe.RoleEditor = Class.extend({
 				if(checkbox) checkbox.checked = true;
 			});
 	},
-	set_roles_in_table: function() {
+	set_roles_in_table: function(frm) {
 		var opts = this.get_roles();
 		var existing_roles_map = {};
 		var existing_roles_list = [];
@@ -227,12 +227,20 @@ frappe.RoleEditor = Class.extend({
 		});
 
 		// add new roles that are checked
-		$.each(opts.checked_roles, function(i, role) {
-			if(existing_roles_list.indexOf(role)==-1) {
-				var user_role = frappe.model.add_child(cur_frm.doc, "UserRole", "user_roles");
-				user_role.role = role;
-			}
-		});
+		if(!cur_frm.doc.__islocal){
+			$.each(opts.checked_roles, function(i, role) {
+				if(existing_roles_list.indexOf(role)==-1) {
+					var user_role = frappe.model.add_child(cur_frm.doc, "UserRole", "user_roles");
+					user_role.role = role;
+				}
+			});
+		}
+		// $.each(opts.checked_roles, function(i, role) {
+		// 	if(existing_roles_list.indexOf(role)==-1) {
+		// 		var user_role = frappe.model.add_child(cur_frm.doc, "UserRole", "user_roles");
+		// 		user_role.role = role;
+		// 	}
+		// });
 
 		refresh_field("user_roles");
 	},
