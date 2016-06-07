@@ -25,6 +25,7 @@ reflags = {
 def get_template(doctype=None, parent_doctype=None, all_doctypes="No", with_data="No"):
 	all_doctypes = all_doctypes=="Yes"
 	docs_to_export = {}
+
 	if doctype:
 		if isinstance(doctype, basestring):
 			doctype = [doctype];
@@ -40,9 +41,18 @@ def get_template(doctype=None, parent_doctype=None, all_doctypes="No", with_data
 	if all_doctypes:
 		doctype_parentfield = {}
 		child_doctypes = []
-		for df in frappe.get_meta(doctype).get_table_fields():
-			child_doctypes.append(df.options)
-			doctype_parentfield[df.options] = df.fieldname
+		# for df in frappe.get_meta(doctype).get_table_fields():
+		# 	child_doctypes.append(df.options)
+		# 	doctype_parentfield[df.options] = df.fieldname
+
+		if doctype == "Patient Allotment":
+			for df in frappe.get_meta(doctype).get_table_fields():
+				# child_doctypes.append(df.options)
+				doctype_parentfield[df.options] = df.fieldname
+		else:
+			for df in frappe.get_meta(doctype).get_table_fields():
+				child_doctypes.append(df.options)
+				doctype_parentfield[df.options] = df.fieldname
 
 	def get_data_keys_definition():
 		return get_data_keys()
@@ -92,11 +102,17 @@ def get_template(doctype=None, parent_doctype=None, all_doctypes="No", with_data
 			}), True)
 
 		for docfield in tablecolumns:
-			append_field_column(docfield, True)
+			if dt == "Patient Allotment":
+				append_field_column_for_pa(docfield, True)
+			else:
+				append_field_column(docfield, True)
 
 		# all non mandatory fields
 		for docfield in tablecolumns:
-			append_field_column(docfield, False)
+			if dt == "Patient Allotment":
+				append_field_column_for_pa(docfield, False)
+			else:
+				append_field_column(docfield, False)
 
 		# append DocType name
 		tablerow[column_start_end[dt].start + 1] = dt
@@ -115,6 +131,18 @@ def get_template(doctype=None, parent_doctype=None, all_doctypes="No", with_data
 			typerow.append(docfield.fieldtype)
 			inforow.append(getinforow(docfield))
 			columns.append(docfield.fieldname)
+
+	def append_field_column_for_pa(docfield, mandatory):
+		if docfield.fieldname not in ['status','discharge','hospital_status']:
+			if docfield and ((mandatory and docfield.reqd) or not (mandatory or docfield.reqd)) \
+				and (docfield.fieldname not in ('parenttype', 'trash_reason')) and not docfield.hidden:
+				tablerow.append("")
+				fieldrow.append(docfield.fieldname)
+				labelrow.append(_(docfield.label))
+				mandatoryrow.append(docfield.reqd and 'Yes' or 'No')
+				typerow.append(docfield.fieldtype)
+				inforow.append(getinforow(docfield))
+				columns.append(docfield.fieldname)
 
 	def append_empty_field_column():
 		tablerow.append("~")
@@ -154,6 +182,7 @@ def get_template(doctype=None, parent_doctype=None, all_doctypes="No", with_data
 
 	def add_data():
 		def add_data_row(row_group, dt, doc, rowidx):
+			# print "Adddddd ddddaaaaaaaaattttttttttttttttttttaaaaaaa"
 			d = doc.copy()
 			meta = frappe.get_meta(dt)
 			if all_doctypes:

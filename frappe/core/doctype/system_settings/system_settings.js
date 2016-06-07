@@ -13,17 +13,3 @@ frappe.ui.form.on("System Settings", "refresh", function(frm) {
 		}
 	});
 });
-
-// Update Bed availability on percentage change
-frappe.ui.form.on("System Settings", "validate", function(frm) {
-	frappe.call({
-		method: "hospital_bed_management.hospital_bed_management.doctype.hospital_registration.hospital_registration.update_bed_availability",
-		args:{
-			"i_percent": frm.doc.i_reserved_bed_percents,
-			"w_percent": frm.doc.w_reserved_bed_percents
-		},
-		callback: function(r) {
-			console.log("Done!!!")
-		}
-	});
-});
