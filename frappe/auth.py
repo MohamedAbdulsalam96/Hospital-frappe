@@ -139,7 +139,10 @@ class LoginManager:
 			frappe.local.cookie_manager.set_cookie("system_user", "yes")
 			if not resume:
 				frappe.local.response['message'] = 'Logged In'
-				frappe.local.response["home_page"] = "/desk"
+				if "Hospital User" in frappe.get_roles(frappe.session.user) :
+					frappe.local.response["home_page"] = "/desk#modules/Hospital Bed Management"
+				else:
+					frappe.local.response["home_page"] = "/desk"
 
 		if not resume:
 			frappe.response["full_name"] = self.full_name
