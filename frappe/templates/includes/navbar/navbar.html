@@ -3,7 +3,8 @@
 		<div class="container">
 			<div class="navbar-header">
 				<a class="navbar-brand ellipsis" href="{{ url_prefix }}{{ home_page or "/" }}">
-					<span>{{ brand_html or (frappe.get_hooks("brand_html") or ["Home"])[0] }}</span>
+					<!-- <span>{{ brand_html or (frappe.get_hooks("brand_html") or ["Home"])[0] }}</span> -->
+					<span> <img style="width:40px; height:50px;" src="{{ splash_image or "/assets/frappe/images/logo.png" }}">  &nbsp; &nbsp; Patient Allotment System-Collector of Mumbai City</span>
 				</a>
 				<a class="pull-right toggle-sidebar visible-xs">
 					<i class="octicon octicon-three-bars"></i>
